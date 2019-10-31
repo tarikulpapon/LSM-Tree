@@ -75,20 +75,12 @@ namespace awesome {
 
     static SSTFile* level_head[32];
 
-    static long level_min_key[32];
-    static long level_max_key[32];
     static long level_file_count[32];
-    static long level_entry_count[32];
     static long level_current_size[32];
 
     static long level_max_size[32];
     static long global_level_file_counter[32];
     static float disk_run_flush_threshold[32];
-
-    static int compaction_counter[32];
-    static int compaction_through_sortmerge_counter[32];
-    static int compaction_through_point_manipulation_counter[32];
-    static int compaction_file_counter[32];
 
   };
 
@@ -102,8 +94,6 @@ namespace awesome {
     static long buffer_insert_count;
 
     static int insert(long sortkey, string value);
-    static int getWorkloadStatictics(EmuEnv* _env);
-
   };
 
 }

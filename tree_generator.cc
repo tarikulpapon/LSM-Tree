@@ -36,20 +36,12 @@ long WorkloadExecutor::total_insert_count = 0;
 
 //SSTFile* DiskMetaFile::head_level_1 = NULL;
 SSTFile *DiskMetaFile::level_head[32] = {};
-long DiskMetaFile::level_min_key[32] = {};
-long DiskMetaFile::level_max_key[32] = {};
 long DiskMetaFile::level_file_count[32] = {};
-long DiskMetaFile::level_entry_count[32] = {};
 long DiskMetaFile::level_max_size[32] = {};
 long DiskMetaFile::level_current_size[32] = {};
 
 long DiskMetaFile::global_level_file_counter[32] = {};
 float DiskMetaFile::disk_run_flush_threshold[32] = {};
-
-int DiskMetaFile::compaction_counter[32] = {};
-int DiskMetaFile::compaction_through_sortmerge_counter[32] = {};
-int DiskMetaFile::compaction_through_point_manipulation_counter[32] = {};
-int DiskMetaFile::compaction_file_counter[32] = {};
 
 bool sortbysortkey(const pair<long, string> &a, const pair<long, string> &b);
 int sortAndWrite(vector<pair<long, string>> file_to_sort, int level_to_flush_in);
@@ -495,36 +487,6 @@ int generateMetaData(SSTFile *file, Page &page, long sort_key_to_insert)
   {
     page.max_sort_key = sort_key_to_insert;
   }
-
-  return 1;
-}
-
-int WorkloadExecutor::getWorkloadStatictics(EmuEnv *_env)
-{
-  std::cout << "************* PRINTING WORKLOAD STATISTICS *************" << std::endl;
-  std::cout << "Total inserts in buffer = " << total_insert_count << " (unique inserts = " << buffer_insert_count << "; in-place updates = " << buffer_update_count << ")" << std::endl;
-
-  std::cout << "Insert stats: ";
-  int total_compactions = 0;
-  long total_files_in_compcations = 0;
-  for (int i = 0; i < 32; i++)
-  {
-    total_compactions += DiskMetaFile::compaction_through_sortmerge_counter[i];
-    total_files_in_compcations += DiskMetaFile::compaction_file_counter[i];
-  }
-  //int disk_pages_per_file = _env->buffer_size_in_pages/_env->buffer_split_factor;
-  int disk_pages_per_file = _env->buffer_size_in_pages; //Doubt
-  std::cout << "#compactions = " << total_compactions << ", #files_in_compactions = " << total_files_in_compcations << ", #IOs = " << 2 * total_files_in_compcations * disk_pages_per_file
-            << " (#IOs does not include IOs for only writing or pointer manipulation)" << std::endl;
-
-  std::cout << "Disk space amplification = ";
-  SSTFile *level_1_head = DiskMetaFile::getSSTFileHead(1);
-  long total_entries_in_L1 = 0;
-  long duplicate_key_count = 0;
-  float space_amplification = (float)duplicate_key_count / total_entries_in_L1;
-  std::cout << space_amplification << " (entries in L1 = " << total_entries_in_L1 << " / duplicated entries = " << duplicate_key_count << ")" << std::endl;
-
-  std::cout << "********************************************************" << std::endl;
 
   return 1;
 }
